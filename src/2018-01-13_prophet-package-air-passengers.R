@@ -31,7 +31,7 @@ p1.historical <- ggplot(df, aes(x=ds, y=y)) +
 m <- prophet(df)
 
 # create future df: ---------
-future <- make_future_dataframe(m, periods = 960)  # 40 years
+future <- make_future_dataframe(m, periods = 3650)  # 10 years, in days
 tail(future)  # todo: this isn't right; should be monthly
 
 
