@@ -8,6 +8,8 @@ library("dplyr")
 library("magrittr")
 library("prophet")
 
+help(package="prophet")
+
 # todo: ----------------------------
 
 
@@ -30,7 +32,7 @@ system('g++ -v')  # works!
 system('where make')  # works! 
 
 
-
+#************************************
 # read data: -----
 df <- read.csv(paste0(here("data"), 
                       "/example_wp_peyton_manning.csv")) %>% 
@@ -60,3 +62,4 @@ plot(m, fcast)
 
 # decompose series : -----
 prophet_plot_components(m, fcast)
+
