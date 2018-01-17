@@ -31,7 +31,9 @@ p1.historical <- ggplot(df, aes(x=ds, y=y)) +
 m <- prophet(df)
 
 # create future df: ---------
-future <- make_future_dataframe(m, periods = 3650)  # 10 years, in days
+future <- make_future_dataframe(m, 
+                                periods = 120,
+                                freq = "month")  # 10 years, months
 tail(future)  # todo: this isn't right; should be monthly
 
 
@@ -46,9 +48,14 @@ plot(m, fcast)
 
 # decompose series : -----
 prophet_plot_components(m, fcast)  
-# not really working: there shouldn't be any day of year 
-#     seasonality 
+# todo: there shouldn't be any day of year seasonality? 
+#     or should there be? 
 
+# compare with histo data from 1 year
+p2.historical <- ggplot(df[1:12, ], aes(x=ds, y=y)) + 
+      geom_line(); p2.historical
+
+# both graphs identify peaks in Mar, Jul, Aug
 
 # write output: ------
 
