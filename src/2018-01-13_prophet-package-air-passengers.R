@@ -32,8 +32,8 @@ m <- prophet(df)
 
 # create future df: ---------
 future <- make_future_dataframe(m, 
-                                periods = 120,
-                                freq = "month")  # 10 years, months
+                                periods = 240,
+                                freq = "month")  # 20 years, months
 tail(future)  # todo: this isn't right; should be monthly
 
 
@@ -52,7 +52,15 @@ prophet_plot_components(m, fcast)
 #     or should there be? 
 
 # compare with histo data from 1 year
-p2.historical <- ggplot(df[1:12, ], aes(x=ds, y=y)) + 
+df2 <- mutate(df, 
+              year = rep(1:12, each=12), 
+              month = as.factor(rep(1:12, 12)))
+
+p2.historical <- ggplot(df2,
+                        aes(x=month, 
+                            y=y, 
+                            group=year, 
+                            col=year)) + 
       geom_line(); p2.historical
 
 # both graphs identify peaks in Mar, Jul, Aug
