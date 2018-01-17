@@ -3,6 +3,11 @@
 # TESTING PACKAGE PROPHET 
 #***********************************
 
+library("here")
+library("dplyr")
+library("magrittr")
+library("prophet")
+
 # todo: ----------------------------
 
 
@@ -28,3 +33,32 @@ system('where make')  # works!
 
 
 
+# read data: -----
+df <- read.csv(paste0(here("data"), 
+                      "/example_wp_peyton_manning.csv")) %>% 
+      mutate(y=log(y))
+
+str(df)
+summary(df)
+
+# fit model: -----
+m <- prophet(df)
+summary(m)
+
+# create future dates : -----
+future <- make_future_dataframe(m, periods = 365)
+tail(future)
+
+# predict with predict( ): -----
+fcast <- predict(m, future)
+
+str(fcast)
+tail(fcast[c('ds', 'yhat', 'yhat_lower', 'yhat_upper')])
+
+
+# plot with plot( ): -----
+plot(m, fcast)
+
+
+# decompose series : -----
+prophet_plot_components(m, fcast)
