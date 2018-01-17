@@ -23,12 +23,10 @@ Sys.getenv("PATH")  # looks good!
 # [1] "C:\\Rtools\\bin;
 # C:\\--SOFTWARE--\\R\\R-3.4.3\\R-3.4.3\\bin\\x64;
 # C:\\--SOFTWARE--\\R\\R-3.4.3\\R-3.4.3\\bin\\x64
-
+# C:\\Rtools\\mingw_32\\bin         # this is the C compiler? 
 
 # test whether g++ can be called (todo: C compiler???)
-system('g++ -v')  # todo: not working :( 
-                  # running command 'g++ -v' had status 127 
-
+system('g++ -v')  # works!
 system('where make')  # works! 
 
 
