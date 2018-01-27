@@ -20,7 +20,9 @@ source(here("src", "weeknum_function.R"))
 
 # TODO: ------------------------------------
 # > here and lubridate packages don't seem to play well 
-
+# > todo: fix week graph, ggsave month and week 
+# > save plots
+# > time series by date 
 #*******************************************
 
 
@@ -69,13 +71,17 @@ p1.ed.boxplot <-
 
 # time series by week 
 p2.ed.time.series.by.week <- 
-      ggplot(df1.ed,
+      ggplot(# summarzie data by week: 
+            group_by(df1.ed, week) %>% 
+                  summarize(week.mean = mean(numvisits)),
+            # now add aes
              aes(x=week, 
-                 y=numvisits)) + 
+                 y=week.mean, 
+                 group=1)) + 
       
-      theme_classic() + 
+      geom_line() + 
       
-      geom_line(); p2.ed.time.series.by.week
+      theme_classic(); p2.ed.time.series.by.week
 
 
 # time series by month 
