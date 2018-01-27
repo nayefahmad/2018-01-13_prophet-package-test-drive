@@ -40,10 +40,13 @@ df1.ed %<>%
              week = floor_date(StartDate, 
                                unit = "week") %>% 
                    week.fn %>% 
+                   as.factor, 
+             month = floor_date(StartDate, 
+                                unit = "month") %>%
                    as.factor)
 
 summary(df1.ed); head(df1.ed)
-as.data.frame(df1.ed)
+# as.data.frame(df1.ed)
 
 # basic graphs:-------------
 unloadNamespace("lubridate")  # otherwise here package doesn't work 
@@ -62,8 +65,30 @@ p1.ed.boxplot <-
                   "p1_ed-boxplot.pdf")); p1.ed.boxplot
 
 
-p2.ed.time.series.by.month. <- 
+
+
+# time series by week 
+p2.ed.time.series.by.week <- 
       ggplot(df1.ed,
              aes(x=week, 
                  y=numvisits)) + 
-      geom_line(); p2.ed.time.series
+      
+      theme_classic() + 
+      
+      geom_line(); p2.ed.time.series.by.week
+
+
+# time series by month 
+p4.ed.time.series.by.month <- 
+      ggplot(
+            # summarzie data by month: 
+            group_by(df1.ed, month) %>% 
+                   summarize(month.mean = mean(numvisits)),
+            # now add aes  
+            aes(x=month, 
+                y=month.mean, 
+                group=1)) +  # note the use of group =1 
+      
+      geom_line() + 
+      
+      theme_classic() ; p4.ed.time.series.by.month
