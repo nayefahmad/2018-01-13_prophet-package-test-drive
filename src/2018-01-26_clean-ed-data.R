@@ -1,7 +1,7 @@
 
 
 #*******************************************
-# CLEAN, EXPLORE ED, ADMIT DATA 
+# CLEAN, EXPLORE ED DATA 
 #*******************************************
 
 library("here")
@@ -64,6 +64,6 @@ p1.ed.boxplot <-
 
 p2.ed.time.series.by.month. <- 
       ggplot(df1.ed,
-             aes(x=StartDate, 
+             aes(x=week, 
                  y=numvisits)) + 
       geom_line(); p2.ed.time.series
