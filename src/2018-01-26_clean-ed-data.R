@@ -50,7 +50,8 @@ df1.ed %<>%
              month.year = paste(month, 
                                 substr(year, 3, 4),
                                 sep="-") %>% 
-                   factor(levels = month.year.levels))
+                   factor(levels = month.year.levels)) %>% 
+      filter(FacilityLongName == "Lions Gate Hospital")
 
 # str(df1.ed)
 # summary(df1.ed); head(df1.ed)
@@ -70,6 +71,10 @@ str(df2.ed.prophet)
 
 
 # write outputs: --------------
+unloadNamespace("lubridate")
 write_csv(df1.ed, 
           paste0(here("output from src"), 
                  "/df1-ed-reformatted.csv")) 
+
+# in xl, change month.year col to text then paste: 
+writeClipboard(df1.ed$month.year %>% as.character)
