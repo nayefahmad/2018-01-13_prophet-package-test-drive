@@ -22,21 +22,22 @@ source(here("src", "2018-01-26_clean-ed-data.R"))
 # > here and lubridate packages don't seem to play well 
 # > add holidays df in prophet( ); colnames holiday, ds, 
 #     lower_window, upper_window as nums 
-# > change histo to fit in latest.df
+# > sim histo fcast
+# > add prev year to graph 
+# > add CIs to graph as lines
 #*******************************************
 
 # input variables: --------------
 # set cutoff date for forecast: 
-start.date <- as.Date("2017-11-30")
+start.date <- as.Date("2017-11-01")
 start.index <- match(start.date, as.Date(df2.ed.prophet$ds))
 
 # set forecast horizon: 
-horizon = 31 
+horizon = 70 
 
 
 # fit model using histo data up to cutoff: ---------------
-df3.ed.histo <-  as.data.frame(df2.ed.prophet) %>% 
-      slice(1:start.index) %>% as.data.frame
+df3.ed.histo <-  df2.ed.prophet[1:start.index, ]
 # max(df3.ed.histo$ds)  
 
 # retain actuals to compare: 
@@ -44,10 +45,13 @@ df4.ed.actual <- df2.ed.prophet[(start.index + 1):nrow(df2.ed.prophet), ]
 
 # apparently ggplot needs POSIXct: 
 df4.ed.actual$ds <- as.POSIXct(df4.ed.actual$ds)
-str(df4.ed.actual)
+# str(df4.ed.actual)
+
+
 
 #*******************************************
 # fit model: 
+#*******************************************
 ed.model <- prophet(df3.ed.histo)
 
 # df of forecsat horizon: 2 weeks ----------
@@ -65,6 +69,8 @@ str(fcast); summary(fcast)
 tail(fcast[c('ds', 'yhat', 'yhat_lower', 'yhat_upper')])
 
 
+
+
 #**************************************
 # plot the forecast: --------
 plot(ed.model, fcast)
@@ -74,11 +80,11 @@ plot(ed.model, fcast)
 #**************************************
 # how to plot only last few dates? ------------
 latest.fcast <- select(fcast, ds, yhat) %>% 
-      rename(historical = yhat) %>% 
-      mutate(fcast = historical)
+      rename(fit.histo = yhat) %>% 
+      mutate(fcast = fit.histo)
 
 # set historical series to NA after cutoff: 
-latest.fcast$historical[(start.index+1):nrow(latest.fcast)] <- NA
+latest.fcast$fit.histo[(start.index+1):nrow(latest.fcast)] <- NA
 
 # set fcast series to NA before cutoff: 
 latest.fcast$fcast[1:start.index] <- NA
@@ -94,7 +100,7 @@ p1.fcast <- ggplot() +
       
       # add historical line: 
       geom_line(data=latest.fcast, 
-                aes(x=ds, y=historical)) + 
+                aes(x=ds, y=fit.histo)) + 
       
       # now add fcast line: 
       geom_line(data=latest.fcast,
