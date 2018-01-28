@@ -22,7 +22,7 @@ source(here("src", "2018-01-26_clean-ed-data.R"))
 # > here and lubridate packages don't seem to play well 
 # > add holidays df in prophet( ); colnames holiday, ds, 
 #     lower_window, upper_window as nums 
-# > how to change dates on x-axis? 
+# > change histo to fit in latest.df
 #*******************************************
 
 # input variables: --------------
@@ -35,12 +35,20 @@ horizon = 31
 
 
 # fit model using histo data up to cutoff: ---------------
-df3.ed.subset <-  as.data.frame(df2.ed.prophet) %>% 
+df3.ed.histo <-  as.data.frame(df2.ed.prophet) %>% 
       slice(1:start.index) %>% as.data.frame
+# max(df3.ed.histo$ds)  
 
-max(df3.ed.subset$ds)  
+# retain actuals to compare: 
+df4.ed.actual <- df2.ed.prophet[(start.index + 1):nrow(df2.ed.prophet), ]
 
-ed.model <- prophet(df3.ed.subset)
+# apparently ggplot needs POSIXct: 
+df4.ed.actual$ds <- as.POSIXct(df4.ed.actual$ds)
+str(df4.ed.actual)
+
+#*******************************************
+# fit model: 
+ed.model <- prophet(df3.ed.histo)
 
 # df of forecsat horizon: 2 weeks ----------
 future <- make_future_dataframe(ed.model, 
@@ -94,9 +102,15 @@ p1.fcast <- ggplot() +
                 colour="blue") + 
       
       # todo: now add actuals line: 
+      geom_line(data=df4.ed.actual, 
+                aes(x=ds, y=y), 
+                colour="red") + 
       
+      # change breaks on x axis: 
+      scale_x_datetime(date_breaks = "5 day") + 
       
-      theme_classic(); p1.fcast
+      theme_classic() + 
+      theme(axis.text.x = element_text(angle=90)); p1.fcast
 
 
 # decompose time series: --------
