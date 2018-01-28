@@ -21,7 +21,7 @@ source(here("src", "2018-01-27_generate-levels-for-month-year.R"))
 
 # TODO: ------------------------------------
 # > here and lubridate packages don't seem to play well 
-
+# > pull data directly from sql 
 #*******************************************
 
 
@@ -52,9 +52,9 @@ df1.ed %<>%
                                 sep="-") %>% 
                    factor(levels = month.year.levels))
 
-str(df1.ed)
-summary(df1.ed); head(df1.ed)
-as.data.frame(df1.ed)[1:100, ]
+# str(df1.ed)
+# summary(df1.ed); head(df1.ed)
+# as.data.frame(df1.ed)[1:100, ]
 
 
 

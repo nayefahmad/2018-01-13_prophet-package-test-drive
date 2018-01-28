@@ -37,6 +37,8 @@ month.year.levels <-
             # define function: 
             function(month, year){
             # fn adds zeroes in front if necessary 
+            # returns month.year in form "01-18"
+                  
                   if(month<10) {
                         month.char <- paste0("0", month)
                   } else {
@@ -58,4 +60,4 @@ month.year.levels <-
             months.df$year)
 
 # examine result: 
-month.year.levels
+# month.year.levels

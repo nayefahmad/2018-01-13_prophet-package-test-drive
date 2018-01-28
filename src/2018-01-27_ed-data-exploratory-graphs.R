@@ -10,15 +10,17 @@ library("magrittr")
 library("prophet")
 library("ggplot2")
 library("readr")
+library("fpp")
+
+# help(package="forecast")
+rm(list = ls())
 
 # source scripts: ------------
 source(here("src", "2018-01-26_clean-ed-data.R")) 
 
 # TODO: ------------------------------------
-# > here and lubridate packages don't seem to play well 
-# > todo: fix week graph, ggsave month and week 
-# > save plots
-# > time series by date 
+# > note: here and lubridate packages don't seem to play well 
+# > stl( ) graph 
 #*******************************************
 
 
@@ -38,8 +40,9 @@ p1.ed.boxplot <-
 
 # boxplot by month: 
 p2.ed.boxplot.month <- 
-      ggplot(df1.ed[1:365,], 
+      ggplot(df1.ed, 
              aes(x=month, y=numvisits)) + 
+      facet_wrap(~year) + 
       geom_boxplot() + 
       stat_summary(fun.y = mean, 
                    geom = "point") + 
@@ -48,10 +51,21 @@ p2.ed.boxplot.month <-
       theme_classic(); p2.ed.boxplot.month
 
 
+# time series by day: 
+p3.ed.time.series.by.day <- 
+      ggplot(df1.ed,
+            aes(x=StartDate, 
+                y=numvisits)) + 
+      
+      geom_line() +  # try geom_point for an alternate view 
+      
+      theme_classic(); p3.ed.time.series.by.day
+
+
 
 
 # time series by week 
-p3.ed.time.series.by.week <- 
+p4.ed.time.series.by.week <- 
       ggplot(# summarzie data by week: 
             group_by(df1.ed, week) %>% 
                   summarize(week.mean = mean(numvisits)),
@@ -62,25 +76,42 @@ p3.ed.time.series.by.week <-
       
       geom_line() + 
       
-      theme_classic(); p3.ed.time.series.by.week
+      theme_classic(); p4.ed.time.series.by.week
 
 
 # time series by month 
-p4.ed.time.series.by.month <- 
+p5.ed.time.series.by.month <- 
       ggplot(
             # summarzie data by month: 
-            group_by(df1.ed, month) %>% 
-                  summarize(month.mean = mean(numvisits)),
+            group_by(df1.ed, month.year) %>% 
+                  summarize(month.mean = mean(numvisits)) %>% 
+                  slice(1:n()),  # change endpoint to slice 
             # now add aes  
-            aes(x=month, 
+            aes(x=month.year, 
                 y=month.mean, 
                 group=1)) +  # note the use of group =1 
       
       geom_line() + 
       
-      theme_classic() ; p4.ed.time.series.by.month
+      theme_classic() ; p5.ed.time.series.by.month
 
+
+# decompose using stl( ): 
+# stl.fit <- stl(as.ts(df1.ed$numvisits, 
+#                      start=c(2009, 1), 
+#                      frequency=365))
+# 
 
 
 # save all plots in one pdf: ----------
-plots <- list(p1.ed.boxplot )
+plots <- list(p1.ed.boxplot, 
+              p2.ed.boxplot.month, 
+              p3.ed.time.series.by.day, 
+              p4.ed.time.series.by.week, 
+              p5.ed.time.series.by.month)
+
+# save all plots in 1 pdf: 
+pdf(here("output from src", 
+         "2018-01-27_ed-exploratory-graphs.pdf"))
+plots[1:5]
+dev.off()
