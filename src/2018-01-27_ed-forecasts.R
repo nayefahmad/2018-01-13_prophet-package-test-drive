@@ -35,7 +35,7 @@ ed.model <- prophet(df3.ed.subset)
 
 # df of forecsat horizon: 2 weeks ----------
 future <- make_future_dataframe(ed.model, 
-                                periods = 365,
+                                periods = 31,
                                 freq = "day")  
 
 tail(future,10)  
@@ -44,7 +44,7 @@ tail(future,10)
 # predict with predict( ): -----
 fcast <- predict(ed.model, future)
 
-str(fcast)
+str(fcast); summary(fcast)
 tail(fcast[c('ds', 'yhat', 'yhat_lower', 'yhat_upper')])
 
 
@@ -54,7 +54,13 @@ plot(ed.model, fcast)
 
 # how to plot only last few dates? 
 latest.fcast <- select(fcast, ds, yhat)
-latest.fcast <- latest.fcast[3600:nrow(latest.fcast) , ]
+
+# set start date for graph: 
+start.date <- as.Date("2017-11-30")
+index <- match(start.date, as.Date(fcast$ds))
+
+# now subset fcast using this startdate: 
+latest.fcast <- latest.fcast[index:nrow(latest.fcast), ]
 str(latest.fcast)
 
 p1.fcast <- ggplot(latest.fcast, 
