@@ -1,7 +1,7 @@
 
 
 #*******************************************
-# CLEAN, EXPLORE ED DATA 
+# CLEAN ED DATA 
 #*******************************************
 
 library("here")
@@ -11,18 +11,17 @@ library("prophet")
 library("ggplot2")
 library("readr")
 
-help(package="prophet")
+# help(package="prophet")
 rm(list=ls())
 
 # source scripts: ------------
-source(here("src", "ggtheme.R"))
+# source(here("src", "ggtheme.R"))
 source(here("src", "weeknum_function.R"))
+source(here("src", "2018-01-27_generate-levels-for-month-year.R"))
 
 # TODO: ------------------------------------
 # > here and lubridate packages don't seem to play well 
-# > todo: fix week graph, ggsave month and week 
-# > save plots
-# > time series by date 
+
 #*******************************************
 
 
@@ -45,56 +44,32 @@ df1.ed %<>%
                    as.factor, 
              month = floor_date(StartDate, 
                                 unit = "month") %>%
-                   as.factor)
+                   as.character %>%
+                   substr(6,7) %>% 
+                   as.factor, 
+             month.year = paste(month, 
+                                substr(year, 3, 4),
+                                sep="-") %>% 
+                   factor(levels = month.year.levels))
 
+str(df1.ed)
 summary(df1.ed); head(df1.ed)
-# as.data.frame(df1.ed)
-
-# basic graphs:-------------
-unloadNamespace("lubridate")  # otherwise here package doesn't work 
-
-p1.ed.boxplot <- 
-      ggplot(df1.ed, 
-             aes(x=year, y=numvisits)) + 
-                   geom_boxplot() + 
-      stat_summary(fun.y = mean, 
-                   geom = "point") + 
-      
-      # mytheme + 
-      theme_classic() + 
-      
-      ggsave(here("output from src", 
-                  "p1_ed-boxplot.pdf")); p1.ed.boxplot
+as.data.frame(df1.ed)[1:100, ]
 
 
 
+# prepare data for prohet:------------
+df2.ed.prophet <- select(df1.ed, 
+                         StartDate, 
+                         numvisits) %>% 
+      rename(ds=StartDate, 
+             y=numvisits)
 
-# time series by week 
-p2.ed.time.series.by.week <- 
-      ggplot(# summarzie data by week: 
-            group_by(df1.ed, week) %>% 
-                  summarize(week.mean = mean(numvisits)),
-            # now add aes
-             aes(x=week, 
-                 y=week.mean, 
-                 group=1)) + 
-      
-      geom_line() + 
-      
-      theme_classic(); p2.ed.time.series.by.week
+str(df2.ed.prophet)
 
 
-# time series by month 
-p4.ed.time.series.by.month <- 
-      ggplot(
-            # summarzie data by month: 
-            group_by(df1.ed, month) %>% 
-                   summarize(month.mean = mean(numvisits)),
-            # now add aes  
-            aes(x=month, 
-                y=month.mean, 
-                group=1)) +  # note the use of group =1 
-      
-      geom_line() + 
-      
-      theme_classic() ; p4.ed.time.series.by.month
+
+# write outputs: --------------
+write_csv(df1.ed, 
+          paste0(here("output from src"), 
+                 "/df1-ed-reformatted.csv")) 
