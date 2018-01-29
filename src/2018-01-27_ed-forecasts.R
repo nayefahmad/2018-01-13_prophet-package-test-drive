@@ -15,7 +15,7 @@ library("readr")
 rm(list=ls())
 
 # source scripts: ------------
-unloadNamespace("lubridate")
+unloadNamespace("lubridate")  # see todo
 source(here("src", "2018-01-26_clean-ed-data.R"))
 
 # TODO: ------------------------------------
@@ -25,6 +25,7 @@ source(here("src", "2018-01-26_clean-ed-data.R"))
 # > sim histo fcast
 # > add prev year to graph 
 # > add CIs to graph as lines
+# > fn for recent dates fcast plot 
 #*******************************************
 
 # input variables: --------------
@@ -32,7 +33,7 @@ source(here("src", "2018-01-26_clean-ed-data.R"))
 start.date <- as.Date("2017-11-01")
 start.index <- match(start.date, as.Date(df2.ed.prophet$ds))
 
-# set forecast horizon: 
+# set forecast horizon in days: 
 horizon = 70 
 
 
@@ -76,12 +77,18 @@ tail(fcast[c('ds', 'yhat', 'yhat_lower', 'yhat_upper')])
 plot(ed.model, fcast)
 # plot(fcast)  # prduces something crazy 
 
+# decompose time series: --------
+prophet_plot_components(ed.model, fcast)  
+# todo: flat trend since 2016?? Does that make sense? 
+
+
+
 
 #**************************************
 # how to plot only last few dates? ------------
 latest.fcast <- select(fcast, ds, yhat) %>% 
       rename(fit.histo = yhat) %>% 
-      mutate(fcast = fit.histo)
+      mutate(fcast = fit.histo)  # create copy
 
 # set historical series to NA after cutoff: 
 latest.fcast$fit.histo[(start.index+1):nrow(latest.fcast)] <- NA
@@ -107,7 +114,7 @@ p1.fcast <- ggplot() +
                 aes(x=ds, y=fcast), 
                 colour="blue") + 
       
-      # todo: now add actuals line: 
+      # now add actuals line: 
       geom_line(data=df4.ed.actual, 
                 aes(x=ds, y=y), 
                 colour="red") + 
@@ -119,6 +126,3 @@ p1.fcast <- ggplot() +
       theme(axis.text.x = element_text(angle=90)); p1.fcast
 
 
-# decompose time series: --------
-prophet_plot_components(ed.model, fcast)  
-# todo: flat trend since 2016?? Does that make sense? 
