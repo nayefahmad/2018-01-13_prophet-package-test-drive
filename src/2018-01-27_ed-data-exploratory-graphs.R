@@ -16,11 +16,12 @@ library("fpp")
 rm(list = ls())
 
 # source scripts: ------------
-source(here("src", "2018-01-26_clean-ed-data.R")) 
+source(here("src", "2018-01-26_clean-ed-data.R"))  # note that site has been set
 
 # TODO: ------------------------------------
 # > note: here and lubridate packages don't seem to play well 
 # > stl( ) graph 
+# > identify site, include in plot titles, output file
 #*******************************************
 
 
@@ -51,21 +52,60 @@ p2.ed.boxplot.month <-
       theme_classic(); p2.ed.boxplot.month
 
 
+# seasonal boxplot: 
+# todo: this doesn't look right
+p3.seasonal.box <- 
+      ggplot(
+            # get avg per month for each year:  
+            group_by(df1.ed, year, month) %>% 
+                  summarize(month.avg = mean(numvisits)), 
+            
+            # now add aes: 
+             aes(x=month, 
+                 y=month.avg)) + 
+      geom_boxplot() + 
+      theme_classic(); p3.seasonal.box
+
+
+# seasonality graph: 
+p4.seasonal.line <- 
+      ggplot(
+            # get avg per month for each year:  
+            group_by(df1.ed, year, month) %>% 
+                  summarize(month.avg = mean(numvisits)),
+            
+            # now add aes( ): 
+             aes(x=month, 
+                 y=month.avg, 
+                 group=year, 
+                 col=year)) + 
+      geom_line() + 
+      theme_classic(); p4.seasonal.line
+
+
+
+
+
+
+#************************************
+# TIME SERIES PLOTS: -------------------
+#************************************
+
 # time series by day: 
-p3.ed.time.series.by.day <- 
+p5.ed.time.series.by.day <- 
       ggplot(df1.ed,
             aes(x=StartDate, 
                 y=numvisits)) + 
       
       geom_line() +  # try geom_point for an alternate view 
       
-      theme_classic(); p3.ed.time.series.by.day
+      theme_classic(); p5.ed.time.series.by.day
 
 
 
 
 # time series by week 
-p4.ed.time.series.by.week <- 
+p6.ed.time.series.by.week <- 
       ggplot(# summarzie data by week: 
             group_by(df1.ed, week) %>% 
                   summarize(week.mean = mean(numvisits)),
@@ -76,11 +116,11 @@ p4.ed.time.series.by.week <-
       
       geom_line() + 
       
-      theme_classic(); p4.ed.time.series.by.week
+      theme_classic(); p6.ed.time.series.by.week
 
 
 # time series by month 
-p5.ed.time.series.by.month <- 
+p7.ed.time.series.by.month <- 
       ggplot(
             # summarzie data by month: 
             group_by(df1.ed, month.year) %>% 
@@ -93,7 +133,7 @@ p5.ed.time.series.by.month <-
       
       geom_line() + 
       
-      theme_classic() ; p5.ed.time.series.by.month
+      theme_classic() ; p7.ed.time.series.by.month
 
 
 # decompose using stl( ): 
@@ -106,12 +146,14 @@ p5.ed.time.series.by.month <-
 # save all plots in one pdf: ----------
 plots <- list(p1.ed.boxplot, 
               p2.ed.boxplot.month, 
-              p3.ed.time.series.by.day, 
-              p4.ed.time.series.by.week, 
-              p5.ed.time.series.by.month)
+              p3.seasonal.box, 
+              p4.seasonal.line,
+              p5.ed.time.series.by.day, 
+              p6.ed.time.series.by.week, 
+              p7.ed.time.series.by.month)
 
 # save all plots in 1 pdf: 
 pdf(here("output from src", 
-         "2018-01-27_ed-exploratory-graphs.pdf"))
-plots[1:5]
+         "2018-02-01_ed-exploratory-graphs.pdf"))
+plots[1:7]
 dev.off()
