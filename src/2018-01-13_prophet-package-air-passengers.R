@@ -10,7 +10,7 @@ library("magrittr")
 library("prophet")
 library("ggplot2")
 
-help(package="prophet")
+# help(package="prophet")
 
 # data: -----
 str(AirPassengers)  # monthly total passengers 
@@ -33,8 +33,8 @@ m <- prophet(df)
 # create future df: ---------
 future <- make_future_dataframe(m, 
                                 periods = 240,
-                                freq = "month")  # 20 years, months
-tail(future)  # todo: this isn't right; should be monthly
+                                freq = "month")  # 20 years, in months
+tail(future)  
 
 
 # predict with predict( ): -----
@@ -51,9 +51,9 @@ prophet_plot_components(m, fcast)
 # todo: there shouldn't be any day of year seasonality? 
 #     or should there be? 
 
-# compare with histo data from 1 year
+# compare with histo data from 12 year
 df2 <- mutate(df, 
-              year = rep(1:12, each=12), 
+              year = rep(1:12, each=12) %>% as.factor, 
               month = as.factor(rep(1:12, 12)))
 
 p2.historical <- ggplot(df2,
@@ -64,6 +64,7 @@ p2.historical <- ggplot(df2,
       geom_line(); p2.historical
 
 # both graphs identify peaks in Mar, Jul, Aug
+# seasonality actually seems to be getting more pronounced 
 
 # write output: ------
 
