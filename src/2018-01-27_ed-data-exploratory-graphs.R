@@ -168,6 +168,26 @@ p7.ed.time.series.by.month <-
 # 
 
 
+#********************************************
+# testing normality: 
+
+# density plot: 
+p8.density <- ggplot(df1.ed, 
+                  aes(x=numvisits)) + 
+      # geom_histogram() + 
+      geom_density() + 
+      theme_classic(); p8.density
+
+# qqnorm: 
+p9.qqnorm <- ggplot(df1.ed, 
+                    aes(sample = df1.ed$numvisits)) + 
+      stat_qq() + 
+      geom_abline(slope = 1,
+                  intercept = 0, 
+                  col="black") + 
+      theme_classic(); p9.qqnorm
+
+
 # save all plots in one pdf: ----------
 plots <- list(p1.ed.boxplot, 
               p2.ed.boxplot.month, 
