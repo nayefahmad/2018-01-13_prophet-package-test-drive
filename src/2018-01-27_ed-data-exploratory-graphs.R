@@ -7,7 +7,7 @@
 library("here")
 library("dplyr")
 library("magrittr")
-library("prophet")
+# library("prophet")
 library("ggplot2")
 library("readr")
 library("fpp")
@@ -25,6 +25,20 @@ source(here("src", "2018-01-26_clean-ed-data.R"))  # note that site has been set
 #*******************************************
 
 
+# identify site for plot titles and filenames: 
+if (!length(table(df1.ed$FacilityLongName)) == 1) {
+      print("error: more than 1 site in data")
+} else {
+      site.name <- df1.ed$FacilityLongName[1]
+}
+# site.name
+
+# id first and last years: 
+first.date <- min(df1.ed$StartDate)  %>% print 
+last.date <- max(df1.ed$StartDate)  %>% print 
+
+
+
 # basic graphs:-------------
 unloadNamespace("lubridate")  # otherwise here package doesn't work 
 
@@ -35,7 +49,7 @@ p1.ed.boxplot <-
       geom_boxplot() + 
       stat_summary(fun.y = mean, 
                    geom = "point") + 
-      
+      labs(title = paste(site.name, "ED visits by year")) + 
       theme_classic(); p1.ed.boxplot
 
 
@@ -47,13 +61,11 @@ p2.ed.boxplot.month <-
       geom_boxplot() + 
       stat_summary(fun.y = mean, 
                    geom = "point") + 
-      
-      # mytheme + 
+      labs(title = paste(site.name, "ED visits by month and year")) + 
       theme_classic(); p2.ed.boxplot.month
 
 
 # seasonal boxplot: 
-# todo: this doesn't look right
 p3.seasonal.box <- 
       ggplot(
             # get avg per month for each year:  
@@ -64,6 +76,8 @@ p3.seasonal.box <-
              aes(x=month, 
                  y=month.avg)) + 
       geom_boxplot() + 
+      labs(title = paste(site.name, "ED visits by month across years"), 
+           subtitle = paste(first.date, "to", last.date)) + 
       theme_classic(); p3.seasonal.box
 
 
@@ -80,6 +94,8 @@ p4.seasonal.line <-
                  group=year, 
                  col=year)) + 
       geom_line() + 
+      labs(title = paste(site.name, "Avg ED visits by month across years"), 
+           subtitle = paste(first.date, "to", last.date)) +
       theme_classic(); p4.seasonal.line
 
 
@@ -99,6 +115,9 @@ p5.ed.time.series.by.day <-
       
       geom_line() +  # try geom_point for an alternate view 
       
+      labs(title = paste(site.name, "ED daily visits"), 
+           subtitle = paste(first.date, "to", last.date)) +
+      
       theme_classic(); p5.ed.time.series.by.day
 
 
@@ -116,6 +135,9 @@ p6.ed.time.series.by.week <-
       
       geom_line() + 
       
+      labs(title = paste(site.name, "Avg ED daily visits by week"), 
+           subtitle = paste(first.date, "to", last.date)) +
+      
       theme_classic(); p6.ed.time.series.by.week
 
 
@@ -132,6 +154,9 @@ p7.ed.time.series.by.month <-
                 group=1)) +  # note the use of group =1 
       
       geom_line() + 
+      
+      labs(title = paste(site.name, "Avg ED daily visits by month"), 
+           subtitle = paste(first.date, "to", last.date)) +
       
       theme_classic() ; p7.ed.time.series.by.month
 
@@ -153,7 +178,10 @@ plots <- list(p1.ed.boxplot,
               p7.ed.time.series.by.month)
 
 # save all plots in 1 pdf: 
-pdf(here("output from src", 
-         "2018-02-01_ed-exploratory-graphs.pdf"))
+filename <- paste0("2018-02-01_",
+                  gsub(" ", "-", tolower(site.name)),
+                  "_ed-exploratory-graphs.pdf")
+
+pdf(here("output from src", filename))
 plots[1:7]
 dev.off()
