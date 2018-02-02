@@ -174,15 +174,15 @@ p7.ed.time.series.by.month <-
 p8.density <- ggplot(df1.ed, 
                   aes(x=numvisits)) + 
       geom_density() + 
-      
-      geom_vline(xintercept = mean(df1.ed$numvisits)) + 
+      # geom_vline(xintercept = mean(df1.ed$numvisits)) + 
+      facet_wrap(~year) + 
       
       # round( ) to -1 for nearest 10s place:
       scale_x_continuous(limits = c(round(min(df1.ed$numvisits), -1),
                                     round(max(df1.ed$numvisits), -1)),
                          breaks = seq(round(min(df1.ed$numvisits), -1),
                                       round(max(df1.ed$numvisits), -1),
-                                       10)) +
+                                       20)) +
 
       labs(title = paste(site.name, "Density of daily ED visits"), 
            subtitle = paste(first.date, "to", last.date)) + 
@@ -192,10 +192,32 @@ p8.density <- ggplot(df1.ed,
 
 
 # qqnorm (ggplot doesn't do this well): 
-qqnorm(df1.ed$numvisits)  # first print a plot 
-qqline(df1.ed$numvisits)
+# first print a plot, then use recordPlot()
+
+# set display: 
+setpar <- par(mfrow=c(3, 4))  # 3 rows 4 cols 
+
+# split data by year: 
+df1.split.year <- split(df1.ed$numvisits, df1.ed$year)
+
+# qqnorm for each year: 
+mapply(
+      # define fn: 
+      function(df, year){
+            qqnorm(df, main=year)
+      }, 
+      
+      # args to fn: 
+      df1.split.year, 
+      names(table(df1.ed$year))
+) 
 
 p9.qqnorm <- recordPlot()  # then use recordPlot( )
+
+# reset display: 
+par(setpar)
+
+
 
 
 # save all plots in one pdf: ----------
