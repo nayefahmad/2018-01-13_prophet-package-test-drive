@@ -55,7 +55,7 @@ df4.ed.actual$ds <- as.POSIXct(df4.ed.actual$ds)
 #*******************************************
 ed.model <- prophet(df3.ed.histo)
 
-# df of forecsat horizon: 2 weeks ----------
+# df of forecsat horizon:  ----------
 future <- make_future_dataframe(ed.model, 
                                 periods = horizon,
                                 freq = "day")  
@@ -85,12 +85,13 @@ prophet_plot_components(ed.model, fcast)
 
 
 #**************************************
-# how to plot only last few dates? ------------
+# CUSTOM PLOT FOCUSING ON LAST FEW DATA POINTS ------------
+#**************************************
 latest.fcast <- select(fcast, ds, yhat) %>% 
-      rename(fit.histo = yhat) %>% 
-      mutate(fcast = fit.histo)  # create copy
+      rename(fit.histo = yhat) %>%  # fitted values to histo data
+      mutate(fcast = fit.histo)  # create copy of fit.histo
 
-# set historical series to NA after cutoff: 
+# set historical series to NA after cutoff date: 
 latest.fcast$fit.histo[(start.index+1):nrow(latest.fcast)] <- NA
 
 # set fcast series to NA before cutoff: 
