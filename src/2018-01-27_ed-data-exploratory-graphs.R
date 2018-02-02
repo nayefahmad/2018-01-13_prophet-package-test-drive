@@ -21,7 +21,6 @@ source(here("src", "2018-01-26_clean-ed-data.R"))  # note that site has been set
 # TODO: ------------------------------------
 # > note: here and lubridate packages don't seem to play well 
 # > stl( ) graph 
-# > identify site, include in plot titles, output file
 #*******************************************
 
 
@@ -174,18 +173,29 @@ p7.ed.time.series.by.month <-
 # density plot: 
 p8.density <- ggplot(df1.ed, 
                   aes(x=numvisits)) + 
-      # geom_histogram() + 
       geom_density() + 
+      
+      geom_vline(xintercept = mean(df1.ed$numvisits)) + 
+      
+      # round( ) to -1 for nearest 10s place:
+      scale_x_continuous(limits = c(round(min(df1.ed$numvisits), -1),
+                                    round(max(df1.ed$numvisits), -1)),
+                         breaks = seq(round(min(df1.ed$numvisits), -1),
+                                      round(max(df1.ed$numvisits), -1),
+                                       10)) +
+
+      labs(title = paste(site.name, "Density of daily ED visits"), 
+           subtitle = paste(first.date, "to", last.date)) + 
+      
       theme_classic(); p8.density
 
-# qqnorm: 
-p9.qqnorm <- ggplot(df1.ed, 
-                    aes(sample = df1.ed$numvisits)) + 
-      stat_qq() + 
-      geom_abline(slope = 1,
-                  intercept = 0, 
-                  col="black") + 
-      theme_classic(); p9.qqnorm
+
+
+# qqnorm (ggplot doesn't do this well): 
+qqnorm(df1.ed$numvisits)  # first print a plot 
+qqline(df1.ed$numvisits)
+
+p9.qqnorm <- recordPlot()  # then use recordPlot( )
 
 
 # save all plots in one pdf: ----------
@@ -195,7 +205,9 @@ plots <- list(p1.ed.boxplot,
               p4.seasonal.line,
               p5.ed.time.series.by.day, 
               p6.ed.time.series.by.week, 
-              p7.ed.time.series.by.month)
+              p7.ed.time.series.by.month, 
+              p8.density, 
+              p9.qqnorm)
 
 # save all plots in 1 pdf: 
 filename <- paste0("2018-02-01_",
@@ -203,5 +215,5 @@ filename <- paste0("2018-02-01_",
                   "_ed-exploratory-graphs.pdf")
 
 pdf(here("output from src", filename))
-plots[1:7]
+plots[1:9]
 dev.off()
