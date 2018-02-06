@@ -51,7 +51,7 @@ df1.ed %<>%
                                 substr(year, 3, 4),
                                 sep="-") %>% 
                    factor(levels = month.year.levels)) %>% 
-      filter(FacilityLongName == "Lions Gate Hospital")
+      filter(FacilityLongName == "Richmond Hospital")
 
 # str(df1.ed)
 # summary(df1.ed); head(df1.ed)

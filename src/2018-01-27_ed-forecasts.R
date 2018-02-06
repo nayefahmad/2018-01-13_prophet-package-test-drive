@@ -26,6 +26,8 @@ source(here("src", "2018-01-26_clean-ed-data.R"))
 # > add prev year to graph 
 # > add CIs to graph as lines
 # > fn for recent dates fcast plot 
+# > add if( ) statement for whether to retain actuals 
+# > add site name to graphs 
 #*******************************************
 
 # input variables: --------------
