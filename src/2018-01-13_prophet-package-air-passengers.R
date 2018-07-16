@@ -4,11 +4,9 @@
 # forecast monthly Air passengers 
 #*****************
 
+library("tidyverse")
 library("here")
-library("dplyr")
-library("magrittr")
 library("prophet")
-library("ggplot2")
 
 # help(package="prophet")
 

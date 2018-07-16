@@ -59,7 +59,7 @@ df1.ed %<>%
 
 
 
-# prepare data for prohet:------------
+# prepare data for prophet:------------
 df2.ed.prophet <- select(df1.ed, 
                          StartDate, 
                          numvisits) %>% 
