@@ -9,14 +9,30 @@ output:
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+
+
+library("ggpubr")
+
 ```
 
 ## Intro 
 
+```{r}
+ggarrange(p1.ed.boxplot,
+          p11.ts.components[[1]],
+          p11.ts.components[[2]],
+          p11.ts.components[[3]],
+          nrow = 4)
+          
+```
+
+
 
 ## Methodology
-* Training data: from 20xx ... to 20xx. 
+* Training data: from 2009-01-01 ... to 2017-12-16. 
       + include list of stat hols in training data 
-* Test data: 1 week from xx to xx 
+* Test data: From 17 Dec 2017 to 07 Jan 2018 inclusive (3 weeks, starting Sundays)
+
+
 
 ## Results 

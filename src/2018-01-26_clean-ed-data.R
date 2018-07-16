@@ -32,6 +32,9 @@ df1.ed <- read_csv(here("data", "2018-01-17_daily-ed-visits-data.csv"))
 # here and lubridate packages don't seem to play well, so we do this later
 library("lubridate")
 
+# Which site to focus on?
+site = "Lions Gate Hospital"
+
 df1.ed %<>% 
       mutate(year = floor_date(StartDate,
                                unit = "year") %>% 
@@ -51,7 +54,7 @@ df1.ed %<>%
                                 substr(year, 3, 4),
                                 sep="-") %>% 
                    factor(levels = month.year.levels)) %>% 
-      filter(FacilityLongName == "Richmond Hospital")
+      filter(FacilityLongName == site)
 
 # str(df1.ed)
 # summary(df1.ed); head(df1.ed)
@@ -72,9 +75,9 @@ str(df2.ed.prophet)
 
 # write outputs: --------------
 unloadNamespace("lubridate")
-write_csv(df1.ed, 
-          paste0(here("output from src"), 
-                 "/df1-ed-reformatted.csv")) 
+# write_csv(df1.ed, 
+#           paste0(here("output from src"), 
+#                  "/df1-ed-reformatted.csv")) 
 
 # in xl, change month.year col to text then paste: 
 writeClipboard(df1.ed$month.year %>% as.character)

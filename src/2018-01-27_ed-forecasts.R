@@ -32,11 +32,11 @@ source(here("src", "2018-01-26_clean-ed-data.R"))
 
 # input variables: --------------
 # set cutoff date for forecast: 
-start.date <- as.Date("2017-11-01")
+start.date <- as.Date("2017-12-16")
 start.index <- match(start.date, as.Date(df2.ed.prophet$ds))
 
 # set forecast horizon in days: 
-horizon = 70 
+horizon = 21 
 
 
 # fit model using histo data up to cutoff: ---------------
@@ -44,7 +44,8 @@ df3.ed.histo <-  df2.ed.prophet[1:start.index, ]
 # max(df3.ed.histo$ds)  
 
 # retain actuals to compare: 
-df4.ed.actual <- df2.ed.prophet[(start.index + 1):nrow(df2.ed.prophet), ]
+df4.ed.actual <- df2.ed.prophet[(start.index + 1):(start.index + horizon), ]
+
 
 # apparently ggplot needs POSIXct: 
 df4.ed.actual$ds <- as.POSIXct(df4.ed.actual$ds)
@@ -76,11 +77,12 @@ tail(fcast[c('ds', 'yhat', 'yhat_lower', 'yhat_upper')])
 
 #**************************************
 # plot the forecast: --------
-plot(ed.model, fcast)
+p10.plot.fcast <- plot(ed.model, fcast); p10.plot.fcast
 # plot(fcast)  # prduces something crazy 
 
 # decompose time series: --------
-prophet_plot_components(ed.model, fcast)  
+p11.ts.components <- prophet_plot_components(ed.model, fcast); p11.ts.components  
+p11.ts.components[[1]]; p11.ts.components[[2]]; p11.ts.components[[3]]
 # todo: flat trend since 2016?? Does that make sense? 
 
 
