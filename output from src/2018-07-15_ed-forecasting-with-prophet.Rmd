@@ -1,0 +1,22 @@
+---
+title: "Forecasting ED visits with Prophet"
+author: "Nayef Ahmad"
+date: "July 15, 2018"
+output: 
+  html_document:
+        toc: TRUE 
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Intro 
+
+
+## Methodology
+* Training data: from 20xx ... to 20xx. 
+      + include list of stat hols in training data 
+* Test data: 1 week from xx to xx 
+
+## Results 
